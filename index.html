@@ -11,10 +11,12 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter",system-ui,sans-serif;
   color:#f2f3f7;
   min-height:100vh;
+  display:flex;
+  align-items:center;
   background:linear-gradient(125deg,#070b14,#10182c,#0c1222,#1a1430,#0a101c);
   background-size:400% 400%;
   animation:bg 22s ease infinite;
-  overflow:hidden;
+  overflow:auto;
 }
 @keyframes bg{
   0%{background-position:0% 50%}
@@ -33,14 +35,31 @@ body{
 .b2{width:340px;height:340px;background:#7c5cff;bottom:-140px;right:6%;animation-delay:-6s}
 .b3{width:260px;height:260px;background:#4f8dff;top:38%;left:42%;opacity:.22;animation-delay:-10s}
 @keyframes float{50%{transform:translate(36px,28px)}}
+.stage{
+  position:relative;
+  width:100%;
+  height:600px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  padding:18px 24px 20px;
+}
+.greet{
+  flex:none;
+  padding:14px 28px;
+  font-size:clamp(30px,3.6vw,40px);
+  font-weight:200;
+  letter-spacing:-.03em;
+  line-height:1.1;
+  color:#f2f3f7;
+}
 .wrap{
   position:relative;
+  flex:1;
+  min-height:0;
   display:grid;
   grid-template-columns:1fr 1.4fr 1fr;
-  gap:20px;
-  padding:24px;
-  height:100vh;
-  min-height:520px;
+  gap:16px;
 }
 .glass{
   background:rgba(255,255,255,.08);
@@ -135,8 +154,9 @@ button.on{
   transition:width 1s linear;
 }
 @media(max-width:860px){
-  body{overflow:auto}
-  .wrap{grid-template-columns:1fr;height:auto;min-height:100vh}
+  body{align-items:stretch}
+  .stage{height:auto}
+  .wrap{grid-template-columns:1fr;min-height:480px}
 }
 </style>
 </head>
@@ -144,6 +164,8 @@ button.on{
 <div class="blob b1"></div>
 <div class="blob b2"></div>
 <div class="blob b3"></div>
+<div class="stage">
+<header class="glass greet" id="greet"></header>
 <div class="wrap">
 <section class="glass">
   <h2>Tijd · Amsterdam</h2>
@@ -175,9 +197,21 @@ button.on{
   </div>
 </section>
 </div>
+</div>
 <script>
 const TZ='Europe/Amsterdam';
+function hourAmsterdam(d){
+  const p=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'numeric',hourCycle:'h23'}).formatToParts(d);
+  return Number(p.find(x=>x.type==='hour').value);
+}
+function greetFor(d){
+  const h=hourAmsterdam(d);
+  if(h>=6&&h<12)return 'Goedemorgen, Ruben';
+  if(h>=12&&h<18)return 'Goedemiddag, Ruben';
+  return 'Goedenavond, Ruben';
+}
 function tick(){const d=new Date();
+greet.textContent=greetFor(d);
 clock.textContent=d.toLocaleTimeString('nl-NL',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit'});
 date.textContent=d.toLocaleDateString('nl-NL',{timeZone:TZ,weekday:'long',day:'numeric',month:'long',year:'numeric'});}
 tick();setInterval(tick,1000);
