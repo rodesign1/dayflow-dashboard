@@ -14,29 +14,80 @@ body{
   display:flex;
   align-items:center;
   background:linear-gradient(125deg,#070b14,#10182c,#0c1222,#1a1430,#0a101c);
-  background-size:400% 400%;
-  animation:bg 22s ease infinite;
+  background-size:280% 280%;
+  animation:bg 28s ease infinite;
   overflow:auto;
 }
 @keyframes bg{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
+  0%{background-position:0% 40%}
+  50%{background-position:100% 60%}
+  100%{background-position:0% 40%}
+}
+body.sky-day{
+  background-image:linear-gradient(148deg,#06101c,#0c2348,#16366a,#0a1834);
+}
+body.sky-dusk{
+  background-image:linear-gradient(152deg,#120810,#2c1428,#4a2814,#2a1640,#0c101c);
+}
+body.sky-night{
+  background-image:linear-gradient(168deg,#04060c,#090f1c,#070b16,#101428);
 }
 .blob{
   position:fixed;
+  z-index:0;
   border-radius:50%;
   filter:blur(80px);
-  opacity:.42;
+  opacity:.38;
   pointer-events:none;
   animation:float 16s ease-in-out infinite;
+  transition:background 1.6s ease,opacity 1.6s ease;
 }
 .b1{width:380px;height:380px;background:#3b6cff;top:-120px;left:-80px}
 .b2{width:340px;height:340px;background:#7c5cff;bottom:-140px;right:6%;animation-delay:-6s}
-.b3{width:260px;height:260px;background:#4f8dff;top:38%;left:42%;opacity:.22;animation-delay:-10s}
+.b3{width:260px;height:260px;background:#4f8dff;top:38%;left:42%;opacity:.2;animation-delay:-10s}
+body.sky-day .b1{background:#2f74ff;opacity:.46}
+body.sky-day .b2{background:#3a4ed8;opacity:.32}
+body.sky-day .b3{background:#6aa4ff;opacity:.22}
+body.sky-dusk .b1{background:#c85a28;opacity:.36}
+body.sky-dusk .b2{background:#6d3adf;opacity:.34}
+body.sky-dusk .b3{background:#e08a3c;opacity:.2}
+body.sky-night .b1{background:#1c3268;opacity:.32}
+body.sky-night .b2{background:#2a2158;opacity:.28}
+body.sky-night .b3{background:#3a4a88;opacity:.14}
 @keyframes float{50%{transform:translate(36px,28px)}}
+.clouds{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  opacity:var(--cloud,0);
+  transition:opacity 1.4s ease;
+}
+.cloud{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(26px);
+  background:radial-gradient(closest-side,rgba(92,98,112,.5),rgba(36,40,52,.22) 68%,transparent 76%);
+  animation:drift 90s linear infinite;
+  animation-play-state:paused;
+  will-change:transform;
+}
+body.has-clouds .cloud{animation-play-state:running}
+.c1{width:68vw;height:30vh;top:-8vh;left:-24vw}
+.c2{width:80vw;height:36vh;top:24vh;left:-36vw;animation-duration:130s;animation-direction:reverse;opacity:.8}
+.c3{width:72vw;height:32vh;bottom:-10vh;left:-18vw;animation-duration:110s}
+@keyframes drift{to{transform:translate3d(42vw,0,0)}}
+#sky{
+  position:fixed;
+  inset:0;
+  z-index:2;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
 .stage{
   position:relative;
+  z-index:3;
   width:100%;
   height:600px;
   display:flex;
@@ -53,6 +104,11 @@ body{
   line-height:1.1;
   color:#f2f3f7;
 }
+.greet.glass{flex-direction:row;align-items:center;gap:14px}
+.astro{width:32px;height:32px;flex:none;color:#f2f3f7}
+.astro[hidden]{display:none}
+.astro .ico{display:none;width:100%;height:100%}
+body.sun-up .astro .sun,body.moon-up .astro .moon{display:block}
 .wrap{
   position:relative;
   flex:1;
@@ -158,14 +214,23 @@ button.on{
   .stage{height:auto}
   .wrap{grid-template-columns:1fr;min-height:480px}
 }
+@media(prefers-reduced-motion:reduce){
+  body,.blob,.cloud{animation:none}
+}
 </style>
 </head>
 <body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="clouds" aria-hidden="true">
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+</div>
 <div class="blob b1"></div>
 <div class="blob b2"></div>
 <div class="blob b3"></div>
 <div class="stage">
-<header class="glass greet" id="greet"></header>
+<header class="glass greet" id="greet"><span class="astro" id="astro" hidden><svg class="ico sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><svg class="ico moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 3.6a7.2 7.2 0 1 0 5.4 11.6A6.4 6.4 0 0 1 15.2 3.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span><span id="hello"></span></header>
 <div class="wrap">
 <section class="glass">
   <h2>Tijd · Amsterdam</h2>
@@ -200,6 +265,8 @@ button.on{
 </div>
 <script>
 const TZ='Europe/Amsterdam';
+const TWILIGHT=45*60*1000;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function hourAmsterdam(d){
   const p=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'numeric',hourCycle:'h23'}).formatToParts(d);
   return Number(p.find(x=>x.type==='hour').value);
@@ -210,30 +277,175 @@ function greetFor(d){
   if(h>=12&&h<18)return 'Goedemiddag, Ruben';
   return 'Goedenavond, Ruben';
 }
+function parseAmsterdam(iso){
+  const m=/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/.exec(iso||'');
+  if(!m) return new Date(NaN);
+  const target=Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0));
+  const fmt=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  let ms=target;
+  for(let i=0;i<4;i++){
+    const o={};
+    for(const p of fmt.formatToParts(new Date(ms))) if(p.type!=='literal') o[p.type]=p.value;
+    const got=Date.UTC(+o.year,+o.month-1,+o.day,+o.hour,+o.minute,+o.second);
+    if(got===target) break;
+    ms+=target-got;
+  }
+  return new Date(ms);
+}
+let sunRise=null,sunSet=null,apiDay=null,skyMode='',cloudAmt=0,raining=false,phaseNow='',lumNow='',skyReady=false;
+function sunUpAt(d){
+  if(sunRise&&sunSet&&!Number.isNaN(sunRise.getTime())){
+    const t=d.getTime();
+    return t>=sunRise.getTime()&&t<sunSet.getTime();
+  }
+  return apiDay===1;
+}
+function phaseAt(d){
+  if(!sunRise||!sunSet||Number.isNaN(sunRise.getTime())) return apiDay===1?'day':apiDay===0?'night':'';
+  const t=d.getTime(), r=sunRise.getTime(), s=sunSet.getTime();
+  if(Math.abs(t-r)<=TWILIGHT||Math.abs(t-s)<=TWILIGHT) return 'dusk';
+  return (t>=r&&t<s)?'day':'night';
+}
+function paintSkyPhase(d){
+  const p=phaseAt(d);
+  const lum=!sunRise?'':sunUpAt(d)?'sun':'moon';
+  if(p&&p!==phaseNow){
+    phaseNow=p;
+    skyMode=p;
+    document.body.classList.remove('sky-day','sky-dusk','sky-night');
+    document.body.classList.add(p==='day'?'sky-day':p==='dusk'?'sky-dusk':'sky-night');
+  }
+  if(lum!==lumNow){
+    lumNow=lum;
+    document.body.classList.toggle('sun-up',lum==='sun');
+    document.body.classList.toggle('moon-up',lum==='moon');
+    astro.hidden=!lum;
+  }
+  ensureSkyLoop();
+}
 function tick(){const d=new Date();
-greet.textContent=greetFor(d);
+hello.textContent=greetFor(d);
+paintSkyPhase(d);
 clock.textContent=d.toLocaleTimeString('nl-NL',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit'});
 date.textContent=d.toLocaleDateString('nl-NL',{timeZone:TZ,weekday:'long',day:'numeric',month:'long',year:'numeric'});}
 tick();setInterval(tick,1000);
+
+const sky=document.getElementById('sky');
+const ctx=sky.getContext('2d',{alpha:true});
+let stars=[],drops=[],raf=0,lastDraw=0,viewW=0,viewH=0;
+function buildField(){
+  stars=Array.from({length:64},()=>({
+    x:Math.random()*viewW,
+    y:Math.random()*viewH*0.92,
+    r:Math.random()*1.15+.35,
+    p:Math.random()*6.28,
+    s:.5+Math.random()*1.6
+  }));
+  drops=Array.from({length:58},()=>spawnDrop(true));
+}
+function spawnDrop(anywhere){
+  return {x:Math.random()*viewW,y:anywhere?Math.random()*viewH:-20,l:11+Math.random()*16,v:3.1+Math.random()*3.2};
+}
+function fitSky(){
+  viewW=window.innerWidth;viewH=window.innerHeight;
+  const dpr=Math.min(window.devicePixelRatio||1,1.5);
+  sky.width=Math.round(viewW*dpr);
+  sky.height=Math.round(viewH*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  buildField();
+}
+function skyNeeded(){return (skyMode==='night'&&cloudAmt<0.72)||raining;}
+function drawSky(t){
+  ctx.clearRect(0,0,viewW,viewH);
+  if(skyMode==='night'&&cloudAmt<0.72){
+    const dim=1-cloudAmt*0.9;
+    for(const s of stars){
+      const tw=reduce?0.72:(0.35+0.65*(0.5+0.5*Math.sin(t*0.001*s.s+s.p)));
+      ctx.globalAlpha=Math.max(0,tw*dim);
+      ctx.fillStyle='#f2f3f7';
+      ctx.fillRect(s.x,s.y,s.r,s.r);
+    }
+    ctx.globalAlpha=1;
+  }
+  if(raining){
+    ctx.strokeStyle='rgba(206,214,228,0.26)';
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    for(const d of drops){
+      ctx.moveTo(d.x,d.y);
+      ctx.lineTo(d.x-1.5,d.y+d.l);
+      if(!reduce){
+        d.y+=d.v;d.x-=0.4;
+        if(d.y>viewH+8){const n=spawnDrop(false);d.x=n.x;d.y=n.y;}
+      }
+    }
+    ctx.stroke();
+  }
+}
+function frame(t){
+  if(document.hidden||!skyNeeded()){raf=0;if(!skyNeeded())ctx.clearRect(0,0,viewW,viewH);return;}
+  if(reduce){drawSky(0);raf=0;return;}
+  raf=requestAnimationFrame(frame);
+  if(t-lastDraw<34) return;
+  lastDraw=t;
+  drawSky(t);
+}
+function ensureSkyLoop(){
+  if(!skyReady) return;
+  if(!skyNeeded()){
+    if(raf) cancelAnimationFrame(raf);
+    raf=0;
+    ctx.clearRect(0,0,viewW,viewH);
+    return;
+  }
+  if(reduce){drawSky(0);return;}
+  if(!raf) raf=requestAnimationFrame(frame);
+}
+fitSky();
+skyReady=true;
+ensureSkyLoop();
+addEventListener('resize',()=>{fitSky();ensureSkyLoop();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden) ensureSkyLoop();});
+
+const WET=new Set([51,53,55,56,57,61,63,65,66,67,71,73,75,77,80,81,82,85,86,95,96,99]);
+function applyAtmosphere(cur,daily){
+  apiDay=cur.is_day===1||cur.is_day===0?cur.is_day:null;
+  sunRise=parseAmsterdam(daily.sunrise[0]);
+  sunSet=parseAmsterdam(daily.sunset[0]);
+  const cover=Number(cur.cloud_cover);
+  const precip=Number(cur.precipitation);
+  const code=cur.weather_code;
+  raining=precip>0.05||WET.has(code);
+  cloudAmt=Math.max(0,Math.min(1,(Number.isFinite(cover)?cover:0)/100));
+  if(raining) cloudAmt=Math.max(cloudAmt,0.68);
+  else if(code===2) cloudAmt=Math.max(cloudAmt,0.38);
+  else if(code===3||code===45||code===48) cloudAmt=Math.max(cloudAmt,0.62);
+  document.documentElement.style.setProperty('--cloud',cloudAmt.toFixed(3));
+  document.body.classList.toggle('has-clouds',cloudAmt>=0.28);
+  document.body.classList.toggle('has-rain',raining);
+  phaseNow='';
+  paintSkyPhase(new Date());
+}
 const W={0:['☀️','Helder'],1:['🌤️','Overwegend helder'],2:['⛅','Half bewolkt'],3:['☁️','Bewolkt'],45:['🌫️','Mist'],48:['🌫️','Rijpmist'],51:['🌦️','Lichte motregen'],53:['🌦️','Motregen'],55:['🌧️','Zware motregen'],56:['🌧️','IJzel'],57:['🌧️','IJzel'],61:['🌦️','Lichte regen'],63:['🌧️','Regen'],65:['🌧️','Zware regen'],66:['🌧️','IJzel'],67:['🌧️','IJzel'],71:['🌨️','Lichte sneeuw'],73:['🌨️','Sneeuw'],75:['❄️','Zware sneeuw'],77:['🌨️','Korrelsneeuw'],80:['🌦️','Buien'],81:['🌧️','Regenbuien'],82:['⛈️','Zware buien'],85:['🌨️','Sneeuwbuien'],86:['❄️','Sneeuwbuien'],95:['⛈️','Onweer'],96:['⛈️','Onweer met hagel'],99:['⛈️','Onweer met hagel']};
 const w=c=>W[c]||['🌡️','Onbekend'];
 async function weer(){try{
-const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=52.37&longitude=4.89&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Europe%2FAmsterdam&forecast_days=5');
+const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=52.37&longitude=4.89&current=temperature_2m,weather_code,is_day,cloud_cover,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=Europe%2FAmsterdam&forecast_days=5');
 const j=await r.json();const c=w(j.current.weather_code);
 wi.textContent=c[0];wt.textContent=Math.round(j.current.temperature_2m)+'°';wc.textContent=c[1];
 fc.innerHTML=j.daily.time.slice(1,5).map((t,i)=>{const k=i+1,x=w(j.daily.weather_code[k]);
 const n=new Date(t+'T12:00:00').toLocaleDateString('nl-NL',{weekday:'short'});
 return `<div class="day"><b>${n}</b><span>${x[0]}</span><small>${Math.round(j.daily.temperature_2m_max[k])}° / ${Math.round(j.daily.temperature_2m_min[k])}°</small></div>`}).join('');
+applyAtmosphere(j.current,j.daily);
 }catch(e){wc.textContent='Weer niet beschikbaar';}}
 weer();setInterval(weer,15*60*1000);
 let len=1500,left=len,run=null;
 const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 function draw(){tm.textContent=fmt(left);pb.style.width=(100*(len-left)/len)+'%';document.title=(run?fmt(left)+' · ':'')+'Dayflow';}
 function stop(){clearInterval(run);run=null;ss.textContent='Start';}
-function set(m){stop();len=m*60;left=len;mf.classList.toggle('on',m==25);mp.classList.toggle('on',m==5);draw();}
+function setMode(m){stop();len=m*60;left=len;mf.classList.toggle('on',m==25);mp.classList.toggle('on',m==5);draw();}
 ss.onclick=()=>{if(run){stop();ss.textContent='Hervat';return}
-ss.textContent='Pauze';run=setInterval(()=>{left--;if(left<=0){stop();try{new AudioContext().resume()}catch(e){}set(len==1500?5:25);return}draw()},1000)};
-rs.onclick=()=>set(len/60);mf.onclick=()=>set(25);mp.onclick=()=>set(5);draw();
+ss.textContent='Pauze';run=setInterval(()=>{left--;if(left<=0){stop();try{new AudioContext().resume()}catch(e){}setMode(len==1500?5:25);return}draw()},1000)};
+rs.onclick=()=>setMode(len/60);mf.onclick=()=>setMode(25);mp.onclick=()=>setMode(5);draw();
 </script>
 </body>
 </html>
