@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dayflow Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter",system-ui,sans-serif;
+  color:#f2f3f7;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  background:linear-gradient(125deg,#070b14,#10182c,#0c1222,#1a1430,#0a101c);
+  background-size:400% 400%;
+  animation:bg 22s ease infinite;
+  overflow:auto;
+}
+@keyframes bg{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+.blob{
+  position:fixed;
+  border-radius:50%;
+  filter:blur(80px);
+  opacity:.42;
+  pointer-events:none;
+  animation:float 16s ease-in-out infinite;
+}
+.b1{width:380px;height:380px;background:#3b6cff;top:-120px;left:-80px}
+.b2{width:340px;height:340px;background:#7c5cff;bottom:-140px;right:6%;animation-delay:-6s}
+.b3{width:260px;height:260px;background:#4f8dff;top:38%;left:42%;opacity:.22;animation-delay:-10s}
+@keyframes float{50%{transform:translate(36px,28px)}}
+.stage{
+  position:relative;
+  width:100%;
+  height:600px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  padding:18px 24px 20px;
+}
+.greet{
+  flex:none;
+  padding:14px 28px;
+  font-size:clamp(30px,3.6vw,40px);
+  font-weight:200;
+  letter-spacing:-.03em;
+  line-height:1.1;
+  color:#f2f3f7;
+}
+.wrap{
+  position:relative;
+  flex:1;
+  min-height:0;
+  display:grid;
+  grid-template-columns:1fr 1.4fr 1fr;
+  gap:16px;
+}
+.glass{
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(28px) saturate(160%);
+  -webkit-backdrop-filter:blur(28px) saturate(160%);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:24px;
+  box-shadow:0 10px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.16);
+  padding:24px;
+  display:flex;
+  flex-direction:column;
+  color:#f2f3f7;
+}
+h2{
+  font-size:13px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#a3a8c3;
+  font-weight:600;
+  margin-bottom:12px;
+}
+.clock{
+  font-size:clamp(48px,6vw,84px);
+  font-weight:200;
+  letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;
+  margin-top:auto;
+  color:#f2f3f7;
+}
+.date{
+  font-size:18px;
+  color:#a3a8c3;
+  margin:6px 0 auto;
+  text-transform:capitalize;
+}
+.now{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.temp{font-size:64px;font-weight:200;color:#f2f3f7}
+.icon{font-size:52px}
+.cond{font-size:18px;color:#a3a8c3}
+.fc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:auto}
+.day{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  padding:12px 6px;
+  text-align:center;
+  color:#f2f3f7;
+}
+.day b{display:block;font-size:13px;color:#a3a8c3;font-weight:600;text-transform:capitalize}
+.day span{font-size:28px;display:block;margin:6px 0}
+.day small{font-size:14px;color:#f2f3f7}
+.mode{display:flex;gap:6px;margin-bottom:8px}
+.mode button{flex:1}
+.timer{
+  font-size:clamp(48px,5.5vw,76px);
+  font-weight:200;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+  margin:auto 0;
+  color:#f2f3f7;
+}
+.ctl{display:flex;gap:10px}
+button{
+  font:inherit;
+  font-size:15px;
+  border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:10px 14px;
+  cursor:pointer;
+  color:#f2f3f7;
+  transition:.2s;
+}
+button:hover{background:rgba(255,255,255,.16)}
+button.on{
+  background:rgba(120,140,255,.28);
+  border-color:rgba(190,200,255,.35);
+}
+.ctl button{flex:1}
+.bar{
+  height:6px;
+  border-radius:6px;
+  background:rgba(255,255,255,.12);
+  overflow:hidden;
+  margin-bottom:16px;
+}
+.bar i{
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,#6ea8ff,#a78bfa);
+  width:0;
+  transition:width 1s linear;
+}
+@media(max-width:860px){
+  body{align-items:stretch}
+  .stage{height:auto}
+  .wrap{grid-template-columns:1fr;min-height:480px}
+}
+</style>
+</head>
+<body>
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+<div class="stage">
+<header class="glass greet" id="greet"></header>
+<div class="wrap">
+<section class="glass">
+  <h2>Tijd · Amsterdam</h2>
+  <div class="clock" id="clock">--:--</div>
+  <div class="date" id="date"></div>
+</section>
+<section class="glass">
+  <h2>Weer · Amsterdam</h2>
+  <div class="now">
+    <div class="icon" id="wi">⛅</div>
+    <div>
+      <div class="temp" id="wt">--°</div>
+      <div class="cond" id="wc">Laden…</div>
+    </div>
+  </div>
+  <div class="fc" id="fc"></div>
+</section>
+<section class="glass">
+  <h2>Focus-timer</h2>
+  <div class="mode">
+    <button id="mf" class="on">Focus 25</button>
+    <button id="mp">Pauze 5</button>
+  </div>
+  <div class="timer" id="tm">25:00</div>
+  <div class="bar"><i id="pb"></i></div>
+  <div class="ctl">
+    <button id="ss">Start</button>
+    <button id="rs">Reset</button>
+  </div>
+</section>
+</div>
+</div>
+<script>
+const TZ='Europe/Amsterdam';
+function hourAmsterdam(d){
+  const p=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'numeric',hourCycle:'h23'}).formatToParts(d);
+  return Number(p.find(x=>x.type==='hour').value);
+}
+function greetFor(d){
+  const h=hourAmsterdam(d);
+  if(h>=6&&h<12)return 'Goedemorgen, Ruben';
+  if(h>=12&&h<18)return 'Goedemiddag, Ruben';
+  return 'Goedenavond, Ruben';
+}
+function tick(){const d=new Date();
+greet.textContent=greetFor(d);
+clock.textContent=d.toLocaleTimeString('nl-NL',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+date.textContent=d.toLocaleDateString('nl-NL',{timeZone:TZ,weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+tick();setInterval(tick,1000);
+const W={0:['☀️','Helder'],1:['🌤️','Overwegend helder'],2:['⛅','Half bewolkt'],3:['☁️','Bewolkt'],45:['🌫️','Mist'],48:['🌫️','Rijpmist'],51:['🌦️','Lichte motregen'],53:['🌦️','Motregen'],55:['🌧️','Zware motregen'],56:['🌧️','IJzel'],57:['🌧️','IJzel'],61:['🌦️','Lichte regen'],63:['🌧️','Regen'],65:['🌧️','Zware regen'],66:['🌧️','IJzel'],67:['🌧️','IJzel'],71:['🌨️','Lichte sneeuw'],73:['🌨️','Sneeuw'],75:['❄️','Zware sneeuw'],77:['🌨️','Korrelsneeuw'],80:['🌦️','Buien'],81:['🌧️','Regenbuien'],82:['⛈️','Zware buien'],85:['🌨️','Sneeuwbuien'],86:['❄️','Sneeuwbuien'],95:['⛈️','Onweer'],96:['⛈️','Onweer met hagel'],99:['⛈️','Onweer met hagel']};
+const w=c=>W[c]||['🌡️','Onbekend'];
+async function weer(){try{
+const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=52.37&longitude=4.89&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Europe%2FAmsterdam&forecast_days=5');
+const j=await r.json();const c=w(j.current.weather_code);
+wi.textContent=c[0];wt.textContent=Math.round(j.current.temperature_2m)+'°';wc.textContent=c[1];
+fc.innerHTML=j.daily.time.slice(1,5).map((t,i)=>{const k=i+1,x=w(j.daily.weather_code[k]);
+const n=new Date(t+'T12:00:00').toLocaleDateString('nl-NL',{weekday:'short'});
+return `<div class="day"><b>${n}</b><span>${x[0]}</span><small>${Math.round(j.daily.temperature_2m_max[k])}° / ${Math.round(j.daily.temperature_2m_min[k])}°</small></div>`}).join('');
+}catch(e){wc.textContent='Weer niet beschikbaar';}}
+weer();setInterval(weer,15*60*1000);
+let len=1500,left=len,run=null;
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function draw(){tm.textContent=fmt(left);pb.style.width=(100*(len-left)/len)+'%';document.title=(run?fmt(left)+' · ':'')+'Dayflow';}
+function stop(){clearInterval(run);run=null;ss.textContent='Start';}
+function set(m){stop();len=m*60;left=len;mf.classList.toggle('on',m==25);mp.classList.toggle('on',m==5);draw();}
+ss.onclick=()=>{if(run){stop();ss.textContent='Hervat';return}
+ss.textContent='Pauze';run=setInterval(()=>{left--;if(left<=0){stop();try{new AudioContext().resume()}catch(e){}set(len==1500?5:25);return}draw()},1000)};
+rs.onclick=()=>set(len/60);mf.onclick=()=>set(25);mp.onclick=()=>set(5);draw();
+</script>
+</body>
+</html>
