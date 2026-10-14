@@ -273,9 +273,9 @@ function hourAmsterdam(d){
 }
 function greetFor(d){
   const h=hourAmsterdam(d);
-  if(h>=6&&h<12)return 'Goedemorgen, Ruben';
-  if(h>=12&&h<18)return 'Goedemiddag, Ruben';
-  return 'Goedenavond, Ruben';
+  if(h>=6&&h<12)return 'Goedemorgen';
+  if(h>=12&&h<18)return 'Goedemiddag';
+  return 'Goedenavond';
 }
 function parseAmsterdam(iso){
   const m=/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/.exec(iso||'');
